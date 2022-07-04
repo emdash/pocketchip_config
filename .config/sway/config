@@ -1,0 +1,149 @@
+# This is my minimalist sway config for the PocketCHIP. It was
+# inspired by flewkey's original config, but tweaked for
+# terminal-oriented users: In particular; maximizing limited screen
+# space, and avoiding key conflicts with terminal applications like
+# emacs.
+
+# user variables
+set $term   foot
+set $status ~/bin/status.sh
+
+# emergency exit keybinding
+bindsym Control+Escape exec swaymsg exit
+
+# The most important thing: configure the pocketchip key map.
+input "1:1:tca8418" {
+  xkb_layout "pocketchip"
+  xkb_options "lv3:ralt_switch_multikey"
+}
+
+# Nice to have: configure and calibrate the touch screen.
+input "1:1:1c25000.rtp" {
+  map_to_region 0 0 480 272
+  calibration_matrix -1.063517 0 1.032310 0 -1.214286 1.075894
+}
+
+# Style:
+# - don't waste a single pixel, we have none to spare.
+# - Use bright colors that stand out on PocketCHIP's washed-out display.
+# - No border for single window on a workspace
+# - When multipe windows appear on a workspace, active window is highlighted.
+# - Minmal bar configuration shows workspaces, date-time, battery, and mode.
+font pango:monospace Medium 7
+client.focused   #ffff00 #ffff00 #ffff00 #ffff00 #ffff00
+client.unfocused #000000 #000000 #000000 #000000 #000000
+smart_gaps on
+smart_borders no_gaps
+default_border pixel 1
+bar {
+  position top
+  colors {
+    statusline         #ffffff
+    background         #000000
+    focused_workspace  #000000 #ffff00 #000000
+    inactive_workspace #000000 #aaaa00 #000000
+    binding_mode       #000000 #ff0000 #000000
+  }
+  status_command ~/bin/status.sh
+}
+
+# This is a "modal" configuration. We have one dedicated key at our
+# disposal, which is nominally the "power" / "application" key. At
+# best, it's awkward to use the power key in combos. With the current
+# xkb config, it doesn't even seem possible to use it in key
+# combos. So instead, we use it as an "escape" key.
+#
+# Pressing either Super_L or the power key will enter "command
+# mode". From there, most key presses will perform one action and
+# return to the default mode.
+#
+# I also added dedicated modes for resizing windows and backlight
+# control.
+
+# The "primary" command mode.
+mode "sway" {
+  # reload sway config
+  bindsym c             mode "default" ; reload
+
+  # launch a terminal
+  bindsym Return        mode "default" ; exec $term
+  
+  # window management and navigation
+  bindsym h             mode "default" ; layout splith
+  bindsym l             mode "default" ; layout toggle
+  bindsym q             mode "default" ; kill
+  bindsym v             mode "default" ; layout splitv
+  bindsym w             mode "default" ; layout toggle tabbed
+  bindsym f             mode "default" ; fullscreen
+  bindsym F11           mode "default" ; fullscreen
+  bindsym a             mode "default" ; focus parent
+  bindsym Left          mode "default" ; focus left
+  bindsym Right         mode "default" ; focus right
+  bindsym Up            mode "default" ; focus up
+  bindsym Down          mode "default" ; focus down
+  bindsym r             mode "resize"
+
+  # workspace management
+  bindsym 1             mode "default" ; workspace number 1
+  bindsym 2             mode "default" ; workspace number 2
+  bindsym 3             mode "default" ; workspace number 3
+  bindsym 4             mode "default" ; workspace number 4
+  bindsym 5             mode "default" ; workspace number 5
+  bindsym 6             mode "default" ; workspace number 6
+  bindsym 7             mode "default" ; workspace number 7
+  bindsym 8             mode "default" ; workspace number 8
+  bindsym 9             mode "default" ; workspace number 9
+  bindsym Shift+1       mode "default" ; move workspace number 1
+  bindsym Shift+2       mode "default" ; move workspace number 2
+  bindsym Shift+3       mode "default" ; move workspace number 3
+  bindsym Shift+4       mode "default" ; move workspace number 4
+  bindsym Shift+5       mode "default" ; move workspace number 5
+  bindsym Shift+6       mode "default" ; move workspace number 6
+  bindsym Shift+7       mode "default" ; move workspace number 7
+  bindsym Shift+8       mode "default" ; move workspace number 8
+  bindsym Shift+9       mode "default" ; move workspace number 9
+  
+  # backlight
+  bindsym minus         mode "backlight" ; exec brightnessctl set 2-
+  bindsym equal         mode "backlight" ; exec brightnessctl set +2
+
+  # exit to default mode.
+  # is there a wildcard binding?
+  bindsym Escape        mode "default"
+  bindsym Super_L       mode "default"
+  bindsym XF86PowerOff  mode "default"
+}
+
+mode "resize" {
+  bindsym Left         mode "resize" ; resize shrink width  10px
+  bindsym Right        mode "resize" ; resize grow   width  10px
+  bindsym Up           mode "resize" ; resize shrink height 10px
+  bindsym Down         mode "resize" ; resize grow   height 10px
+
+  # exit to default mode.
+  bindsym Return       mode "default"
+  bindsym Escape       mode "default"
+  bindsym Super_L      mode "default"
+  bindsym XF86PowerOff mode "default"
+}
+
+mode "backlight" {
+  bindsym minus        mode "backlight" ; exec brightnessctl set 2-
+  bindsym equal        mode "backlight" ; exec brightnessctl set +2
+
+  # exit to default mode.
+  bindsym Return       mode "default"
+  bindsym Escape       mode "default"
+  bindsym Super_L      mode "default"
+  bindsym XF86PowerOff mode "default"
+}
+
+# bind both the power key and, in case we've got an external keyboard
+# attached. the super key.
+bindsym XF86PowerOff  mode "sway"
+bindsym Super_L       mode "sway"
+
+# start terminal at launch
+exec $term
+
+include /etc/sway/config.d/*
