@@ -5,8 +5,10 @@
 # emacs.
 
 # user variables
-set $term   foot
-set $status ~/bin/status.sh
+set $term       foot
+set $status     ~/bin/status.sh
+set $launch     dmenu_run
+set $screenshot grim
 
 # emergency exit keybinding
 bindsym Control+Escape exec swaymsg exit
@@ -65,8 +67,10 @@ mode "sway" {
   # reload sway config
   bindsym c             mode "default" ; reload
 
-  # launch a terminal
+  # launchers
   bindsym Return        mode "default" ; exec $term
+  bindsym d		mode "default" ; exec $launch
+  bindsym Shift+s       mode "default" ; exec $screenshot
   
   # window management and navigation
   bindsym h             mode "default" ; layout splith
